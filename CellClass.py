@@ -12,12 +12,14 @@ class CellClass:
         self.markerRadius = 0.1
         self.cellRadius = cellRadius
         self.neighborCells = []
+        self.qntMarkers = 0
 
     def DartThrow(self):
         #flag to break the loop if it is taking too long (maybe out of space)
         flag = 0
         #print("Qnt create: ", self.qntMarkers)
-        for i in range(0, self.qntMarkers):
+        i = 0
+        while i < self.qntMarkers:
             x = random.uniform(self.position.x, self.position.x + self.cellRadius)
             y = random.uniform(self.position.y, self.position.y + self.cellRadius)
 
@@ -46,6 +48,8 @@ class CellClass:
                 flag = 0
                 print(self.id)
                 break
+
+            i += 1
 
     def CreateMarkers(self):
         self.density *= (self.cellRadius) / (2.0 * self.markerRadius)

@@ -40,15 +40,25 @@ def CreateMarkers():
 		cells[i].CreateMarkers()
 		#print("Qnt created: ", len(cells[i].markers))
 
+#save markers in file
+def SaveMarkers():
+	markerFile = open("markers.csv", "w")
+	for i in range(0, len(cells)):
+		for j in range(0, len(cells[i].markers)):
+			markerFile.write(cells[i].id + ";" + str(cells[i].markers[j].position.x) + ";" + str(cells[i].markers[j].position.y) + ";" + str(cells[i].markers[j].position.z) + "\n")
+	markerFile.close()
+
 CreateMap()
 CreateMarkers()
+SaveMarkers();
 
 #for each cell, find its neighbors
 for i in range(0, len(cells)):
 	cells[i].FindNeighbor(cells)
 
 #create one agent
-agents.append(AgentClass(1, goal, 1, 1.2, Vector3(19, 0, 0)))
+agents.append(AgentClass(1, goal, 2, 1.2, Vector3(0, 0, 0)))
+#agents.append(AgentClass(2, goal, 2, 1.2, Vector3(4, 6, 0)))
 
 #for each agent, find its initial cell
 for i in range(0, len(agents)):
@@ -98,7 +108,8 @@ while True:
 	#   */
 
 	agentsToKill = []
-	for i in range(0, len(agents)):
+	i = 0
+	while i < len(agents):
 		agentGoal = agents[i].goal
 		agentMarkers = agents[i].markers
 
@@ -110,6 +121,7 @@ while True:
 			newZ = agentMarkers[j].position.z - agents[i].position.z
 			agents[i].vetorDistRelacaoMarcacao.append(Vector3(newX, newY, newZ))
 
+		
 		#calculate the movement vector
 		agents[i].CalculateMotionVector()
         #calculate speed vector
@@ -123,15 +135,17 @@ while True:
 
 		#verify agent position, in relation to the goal. If arrived, bye
 		dist = Vector3.Distance(agents[i].goal, agents[i].position)
-		print("Dist: ", dist, " -- Radius: ", agents[i].radius, " -- Agent: ", agents[i].position.x, agents[i].position.y)
+		print(agents[i].id, " -- Dist: ", dist, " -- Radius: ", agents[i].radius, " -- Agent: ", agents[i].position.x, agents[i].position.y)
 		#print(agents[i].speed.x, agents[i].speed.y)
-		if dist < agents[i].radius:
+		if dist < agents[i].radius / 4:
 			agentsToKill.append(i)
+
+		i += 1
 
 	#die!
 	if len(agentsToKill) > 0:
 		for i in range(0, len(agentsToKill)):
-			agents.pop(i)
+			agents.pop(agentsToKill[i])
 
 
 #close file

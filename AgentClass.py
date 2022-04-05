@@ -83,7 +83,7 @@ class AgentClass:
             self.m.x += newX
             self.m.y += newY
             self.m.z += newZ           
-            #print(self.m.x, self.m.y, self.m.z)
+        #print(self.m.x, self.m.y, self.m.z)
 
     #calculate speed vector
     def CalculateSpeed(self):
@@ -114,14 +114,14 @@ class AgentClass:
         #get all markers on cell
         cellMarkers = checkCell.markers
 
-        #iterate all cell markers to check distance between auxins and agent
+        #iterate all cell markers to check distance between markers and agent
         for i in range(0, len(cellMarkers)):
             #see if the distance between this agent and this marker is smaller than the actual value, and inside agent radius
             distance = Vector3.Distance(self.position, cellMarkers[i].position);
             #we also test if it is already inside someone's personal space
             if distance < cellMarkers[i].minDistance and distance <= self.radius:
                 #take the marker!!
-                #if this auxin already was taken, need to remove it from the agent who had it
+                #if this marker already was taken, need to remove it from the agent who had it
                 if cellMarkers[i].taken and cellMarkers[i].owner.id != self.id:
                     otherAgent = cellMarkers[i].owner;
                     otherAgent.markers.remove(cellMarkers[i])
@@ -137,13 +137,13 @@ class AgentClass:
                 self.markers.append(cellMarkers[i]);
 
     #find all markers near him (Voronoi Diagram)
-    #call this method from game controller, to make it sequential for each agent
+    #call this method from Biocrowds, to make it sequential for each agent
     def FindNearMarkers(self):
         #clear all agents auxins, to start again for this iteration
         self.markers.clear()
         self.markers = []
 
-        #check all auxins on agent's cell
+        #check all markers on agent's cell
         self.CheckMarkersCell(self.cell)
 
         #distance from agent to cell, to define agent new cell
@@ -155,7 +155,7 @@ class AgentClass:
             if i >= len(self.cell.neighborCells):
                 break
 
-            #check all auxins on this cell
+            #check all markers on this cell
             try:
                 self.CheckMarkersCell(self.cell.neighborCells[i])
             except:
