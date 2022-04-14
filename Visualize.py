@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
   
 # values on x-axis
-x = [11]
+x = [5]
 # values on y-axis
 y = [19]
 

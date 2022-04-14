@@ -4,22 +4,22 @@ from CellClass import CellClass
 from MarkerClass import MarkerClass
 
 #markers density
-PORC_QTD_Marcacoes = 0.65
+PORC_QTD_Marcacoes = 0.8
 
 #50FPS
 timeStep = 0.02
 
 #agents
-agents = []
+agents:list[AgentClass] = []
 
 #cells
-cells = []
+cells:list[CellClass] = []
 
 #size of each square cell (Ex: 2 -> cell 2x2)
 cellSize = 2
 
 #goal
-goal = Vector3(11, 19, 0)
+goal = Vector3(5, 19, 0)
 
 #size of the scenario
 mapSize = Vector3(20, 20, 0)
@@ -50,15 +50,15 @@ def SaveMarkers():
 
 CreateMap()
 CreateMarkers()
-SaveMarkers();
+SaveMarkers()
 
 #for each cell, find its neighbors
 for i in range(0, len(cells)):
 	cells[i].FindNeighbor(cells)
 
 #create one agent
-agents.append(AgentClass(1, goal, 2, 1.2, Vector3(0, 0, 0)))
-#agents.append(AgentClass(2, goal, 2, 1.2, Vector3(4, 6, 0)))
+agents.append(AgentClass(1, goal, 2, 1.2, Vector3(12, 0, 0)))
+agents.append(AgentClass(2, goal, 2, 1.2, Vector3(14, 6, 0)))
 
 #for each agent, find its initial cell
 for i in range(0, len(agents)):
@@ -81,15 +81,23 @@ while True:
 	#for each agent, we reset their info
 	for i in range(0, len(agents)):
 		agents[i].ClearAgent()
-
+	#print("markers", len(agents[0].markers))
 	#reset the markers
 	for i in range(0, len(cells)):
 		for j in range(0, len(cells[i].markers)):
 			cells[i].markers[j].ResetMarker()
 
+	for i in range(0, len(cells)):
+		for j in range(0, len(cells[i].markers)):
+			if cells[i].markers[j].taken:
+				print("Error taken")
+			if cells[i].markers[j].owner is not None:
+				print("Error owner")
+	
 	#find nearest markers for each agent
 	for i in range(0, len(agents)):
 		agents[i].FindNearMarkers()
+	#	print(sum([len(c.markers) for c in cells]), len(agents[i].markers))
 
 	#/*to find where the agent must move, we need to get the vectors from the agent to each auxin he has, and compare with 
 	#   the vector from agent to goal, generating a angle which must lie between 0 (best case) and 180 (worst case)
@@ -116,14 +124,17 @@ while True:
 		#vector for each marker
 		for j in range(0, len(agentMarkers)):
 			#add the distance vector between it and the agent
+			#print (agents[i].position, agentMarkers[j].position)
 			newX = agentMarkers[j].position.x - agents[i].position.x
 			newY = agentMarkers[j].position.y - agents[i].position.y
 			newZ = agentMarkers[j].position.z - agents[i].position.z
 			agents[i].vetorDistRelacaoMarcacao.append(Vector3(newX, newY, newZ))
 
-		
+		#print("total", len(agents[i].vetorDistRelacaoMarcacao))
 		#calculate the movement vector
 		agents[i].CalculateMotionVector()
+  
+		print(agents[i].m)
         #calculate speed vector
 		agents[i].CalculateSpeed()
 
@@ -135,7 +146,7 @@ while True:
 
 		#verify agent position, in relation to the goal. If arrived, bye
 		dist = Vector3.Distance(agents[i].goal, agents[i].position)
-		print(agents[i].id, " -- Dist: ", dist, " -- Radius: ", agents[i].radius, " -- Agent: ", agents[i].position.x, agents[i].position.y)
+		print(agents[i].id, " -- Dist: ", dist, " -- Radius: ", agents[i].radius, " -- Agent: ", agents[i].position.x, agents[i].position.y, [goal.x, goal.y, goal.z])
 		#print(agents[i].speed.x, agents[i].speed.y)
 		if dist < agents[i].radius / 4:
 			agentsToKill.append(i)

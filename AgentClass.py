@@ -7,7 +7,7 @@ class AgentClass:
         self.id = id
         self.radius = radius
         self.maxSpeed = maxSpeed
-        self.markers = []
+        self.markers:list[MarkerClass] = []
         self.position = position
         self.vetorDistRelacaoMarcacao = []
         self.denominadorW = False
@@ -21,16 +21,16 @@ class AgentClass:
     def ClearAgent(self):
         #re-set inicial values
         self.valorDenominadorW = 0
-        self.vetorDistRelacaoMarcacao.clear()
+        self.vetorDistRelacaoMarcacao = []
         self.denominadorW = False
         self.m = Vector3.Zero()
         self.speed = Vector3.Zero()
-        self.markers.clear()
+        self.markers = []
         self.speedModule = 0
 
     #calculate W
     def CalculateWeight(self, indiceRelacao):
-        retorno = 0
+        #retorno = 0
 
         #calculate F (F is part of weight formula)
         valorF = self.CalculateF(indiceRelacao)
@@ -53,16 +53,32 @@ class AgentClass:
         #distance between auxin´s distance and origin (dont know why origin...)
         moduloY = Vector3.Distance(self.vetorDistRelacaoMarcacao[indiceRelacao], Vector3.Zero())
         #distance between goal vector and origin (dont know why origin...)
-        moduloX = Vector3.Distance(self.goal, Vector3.Zero())
-        #vector * vector
-        produtoEscalar = (self.vetorDistRelacaoMarcacao[indiceRelacao].x * self.goal.x) + (self.vetorDistRelacaoMarcacao[indiceRelacao].y * self.goal.y) + (self.vetorDistRelacaoMarcacao[indiceRelacao].z * self.goal.z)
-
+        #print(Vector3.sub_vec(self.goal, self.position))
+        #print(Vector3.Zero())
+        #print(Vector3.Distance(Vector3.sub_vec(self.goal, self.position), Vector3.Zero()))
+        #moduloX = Vector3.Distance(Vector3.sub_vec(self.goal, self.position), Vector3.Zero())
+        moduloX = 1.0
+        
         if moduloY < 0.00001:
             return 0
-
-        #return the formula, defined in tesis/paper
+        produtoEscalar = Vector3.dot_vec(self.vetorDistRelacaoMarcacao[indiceRelacao],  Vector3.nrm_vec(Vector3.sub_vec(self.goal, self.position)))
+        
         retorno = (1.0 / (1.0 + moduloY)) * (1.0 + ((produtoEscalar) / (moduloX * moduloY)))
         return retorno
+        
+        
+        
+        
+        #moduloX = Vector3.Distance(self.goal, Vector3.Zero())
+        #vector * vector
+        #produtoEscalar = (self.vetorDistRelacaoMarcacao[indiceRelacao].x * self.goal.x) + (self.vetorDistRelacaoMarcacao[indiceRelacao].y * self.goal.y) + (self.vetorDistRelacaoMarcacao[indiceRelacao].z * self.goal.z)
+
+        #if moduloY < 0.00001:
+        #    return 0
+
+        #return the formula, defined in tesis/paper
+        #retorno = (1.0 / (1.0 + moduloY)) * (1.0 + ((produtoEscalar) / (moduloX * moduloY)))
+        #return retorno
 
     #The calculation formula starts here
     #the ideia is to find m=SUM[k=1 to n](Wk*Dk)
@@ -71,11 +87,12 @@ class AgentClass:
     #distance of the marker from the agent
     def CalculateMotionVector(self):
         #for each agent´s marker
+        s = 0.0
         for i in range(0, len(self.vetorDistRelacaoMarcacao)):
             valorW = self.CalculateWeight(i)
             if self.valorDenominadorW < 0.0001:
                 valorW = 0
-
+            s += valorW
             #sum the resulting vector * weight (Wk*Dk)
             newX = self.vetorDistRelacaoMarcacao[i].x * self.maxSpeed * valorW
             newY = self.vetorDistRelacaoMarcacao[i].y * self.maxSpeed * valorW
@@ -84,10 +101,11 @@ class AgentClass:
             self.m.y += newY
             self.m.z += newZ           
         #print(self.m.x, self.m.y, self.m.z)
+        #print("weights", s)
 
     #calculate speed vector
     def CalculateSpeed(self):
-        moduloM = Vector3.Distance(self.m, Vector3.Zero());
+        moduloM = Vector3.Distance(self.m, Vector3.Zero())
 
         #multiply for PI
         s = moduloM * 3.14
@@ -117,24 +135,24 @@ class AgentClass:
         #iterate all cell markers to check distance between markers and agent
         for i in range(0, len(cellMarkers)):
             #see if the distance between this agent and this marker is smaller than the actual value, and inside agent radius
-            distance = Vector3.Distance(self.position, cellMarkers[i].position);
+            distance = Vector3.Distance(self.position, cellMarkers[i].position)
             #we also test if it is already inside someone's personal space
             if distance < cellMarkers[i].minDistance and distance <= self.radius:
                 #take the marker!!
                 #if this marker already was taken, need to remove it from the agent who had it
                 if cellMarkers[i].taken and cellMarkers[i].owner.id != self.id:
-                    otherAgent = cellMarkers[i].owner;
+                    otherAgent = cellMarkers[i].owner
                     otherAgent.markers.remove(cellMarkers[i])
 
                 #marker is taken
-                cellMarkers[i].taken = True;
+                cellMarkers[i].taken = True
                 #marker has agent
-                cellMarkers[i].owner = self;
+                cellMarkers[i].owner = self
                 #update min distance
-                cellMarkers[i].minDistance = distance;
+                cellMarkers[i].minDistance = distance
 
                 #update my markers
-                self.markers.append(cellMarkers[i]);
+                self.markers.append(cellMarkers[i])
 
     #find all markers near him (Voronoi Diagram)
     #call this method from Biocrowds, to make it sequential for each agent

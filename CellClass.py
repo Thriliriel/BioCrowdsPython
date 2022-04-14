@@ -7,7 +7,7 @@ class CellClass:
     def __init__(self, id, position, cellRadius, density = 0.65, markers = []):
         self.id = id
         self.position = position
-        self.markers = markers
+        self.markers:list[MarkerClass] = markers
         self.density = density
         self.markerRadius = 0.1
         self.cellRadius = cellRadius
