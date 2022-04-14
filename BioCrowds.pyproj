@@ -24,6 +24,7 @@
     <Compile Include="AgentClass.py" />
     <Compile Include="BioCrowds.py" />
     <Compile Include="CellClass.py" />
+    <Compile Include="GoalClass.py" />
     <Compile Include="MarkerClass.py" />
     <Compile Include="Vector3Class.py" />
     <Compile Include="Visualize.py" />

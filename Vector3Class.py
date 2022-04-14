@@ -21,15 +21,17 @@ class Vector3:
     def __repr__(self) -> str:
         return str([self.x, self.y, self.z])
 
+    @staticmethod
     def Zero():
-        return Vector3(0.0,0.0,0.0)
+        return Vector3(0.0,0.0,0.0)    
     
-    
+    @staticmethod
     def Distance(p1, p2):
         return math.sqrt(math.pow(p2.x - p1.x, 2) + math.pow(p2.y - p1.y, 2) + math.pow(p2.z - p1.z, 2))
 
+    #operations over vectors
     @staticmethod
-    def add_vec (obj0, obj1):
+    def Add_vec (obj0, obj1):
         result = Vector3(0.0,0.0,0.0)
         result.x = obj0.x + obj1.x
         result.y = obj0.y + obj1.y
@@ -37,7 +39,7 @@ class Vector3:
         return (result)
 
     @staticmethod
-    def sub_vec (obj0, obj1):
+    def Sub_vec (obj0, obj1):
         result = Vector3(0.0,0.0,0.0)
         result.x = obj0.x - obj1.x
         result.y = obj0.y - obj1.y
@@ -45,19 +47,19 @@ class Vector3:
         return (result)
 
     @staticmethod
-    def mul_vec (obj, coef):
+    def Mul_vec (obj, coef, secondCoef = 1):
         result = Vector3(0.0,0.0,0.0)
-        result.x = obj.x * coef
-        result.y = obj.y * coef
-        result.z = obj.z * coef
+        result.x = obj.x * coef * secondCoef
+        result.y = obj.y * coef * secondCoef
+        result.z = obj.z * coef * secondCoef
         return (result)
 
     @staticmethod
-    def dot_vec (obj0, obj1):
+    def Dot_vec (obj0, obj1):
         return (obj0.x*obj1.x + obj0.y*obj1.y + obj0.z*obj1.z )
 
     @staticmethod
-    def crs_vec (obj0, obj1):
+    def Crs_vec (obj0, obj1):
         result = Vector3(0.0,0.0,0.0)
         result.x = obj0.y*obj1.z - obj0.z*obj1.y
         result.y = obj0.z*obj1.x - obj0.x*obj1.z
@@ -65,13 +67,13 @@ class Vector3:
         return (result)
 
     @staticmethod
-    def norm (obj):
+    def Norm (obj):
         return sqrt(obj.x*obj.x + obj.y*obj.y + obj.z*obj.z)
 
     @staticmethod
-    def nrm_vec (obj):
-        result = Vector3(0.0,0.0,0.0)
-        nrm = Vector3.norm(obj)
+    def Nrm_vec (obj):
+        result = Vector3.Zero()
+        nrm = Vector3.Norm(obj)
         result.x = obj.x / nrm
         result.y = obj.y / nrm
         result.z = obj.z / nrm

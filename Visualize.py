@@ -2,20 +2,25 @@
 import matplotlib.pyplot as plt
   
 # values on x-axis
-x = [5]
+x = []
 # values on y-axis
-y = [19]
+y = []
+
+#goals
+for line in open("Input/goals.txt", "r"):
+	if '#' in line:
+		continue
+
+	#create goal
+	gl = line.split(',')
+	x.append(float(gl[1]))
+	y.append(float(gl[2]))
 
 #open file to read
-readFile = open("resultFile.csv", "r")
-
 for line in open("resultFile.csv"):
     csv_row = line.split(';')
     x.append(float(csv_row[1]))
     y.append(float(csv_row[2]))
-
-
-readFile.close()
   
 plt.axis([0, 20, 0, 20])
 

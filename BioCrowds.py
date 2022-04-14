@@ -2,27 +2,73 @@ from AgentClass import AgentClass
 from Vector3Class import Vector3
 from CellClass import CellClass
 from MarkerClass import MarkerClass
+from GoalClass import GoalClass
 
+#default values
+#size of the scenario
+mapSize = Vector3(20, 20, 0)
 #markers density
-PORC_QTD_Marcacoes = 0.8
-
-#50FPS
+PORC_QTD_Marcacoes = 0.65
+#FPS (default: 50FPS)
 timeStep = 0.02
-
-#agents
-agents:list[AgentClass] = []
-
-#cells
-cells:list[CellClass] = []
-
 #size of each square cell (Ex: 2 -> cell 2x2)
 cellSize = 2
 
-#goal
-goal = Vector3(5, 19, 0)
+#read the config file
+lineCount = 1
+for line in open("Input/config.txt", "r"):
+	if '#' in line:
+		continue
+	if lineCount == 1:
+		#markers density
+		PORC_QTD_Marcacoes = float(line)
+	elif lineCount == 2:
+		#FPS
+		timeStep = float(line)
+	elif lineCount == 3:
+		#size of each square cell
+		cellSize = int(line)
+	elif lineCount == 4:
+		#size of the scenario
+		sp = line.split(',')
+		mapSize = Vector3(int(sp[0]), int(sp[1]), int(sp[2]))
 
-#size of the scenario
-mapSize = Vector3(20, 20, 0)
+	lineCount += 1
+
+#goals
+goals = []
+
+#read the goals file
+for line in open("Input/goals.txt", "r"):
+	if '#' in line:
+		continue
+
+	#create goal
+	gl = line.split(',')
+	goals.append(GoalClass(int(gl[0]), Vector3(float(gl[1]), float(gl[2]), float(gl[3]))))
+
+#agents
+agents = []
+
+#read the agents file
+for line in open("Input/agents.txt", "r"):
+	if '#' in line:
+		continue
+
+	#create agent
+	ag = line.split(',')
+
+	#find the goal with this id
+	gl = None
+	for i in range(0, len(goals)):
+		if goals[i].id == int(ag[1]):
+			gl = goals[i]
+			break
+
+	agents.append(AgentClass(int(ag[0]), gl, float(ag[2]), float(ag[3]), Vector3(float(ag[4]), float(ag[5]), float(ag[6]))))
+
+#cells
+cells = []
 
 #create the cells and markers
 def CreateMap():
@@ -56,10 +102,6 @@ SaveMarkers()
 for i in range(0, len(cells)):
 	cells[i].FindNeighbor(cells)
 
-#create one agent
-agents.append(AgentClass(1, goal, 2, 1.2, Vector3(12, 0, 0)))
-agents.append(AgentClass(2, goal, 2, 1.2, Vector3(14, 6, 0)))
-
 #for each agent, find its initial cell
 for i in range(0, len(agents)):
 	minDis = 5
@@ -86,13 +128,6 @@ while True:
 	for i in range(0, len(cells)):
 		for j in range(0, len(cells[i].markers)):
 			cells[i].markers[j].ResetMarker()
-
-	for i in range(0, len(cells)):
-		for j in range(0, len(cells[i].markers)):
-			if cells[i].markers[j].taken:
-				print("Error taken")
-			if cells[i].markers[j].owner is not None:
-				print("Error owner")
 	
 	#find nearest markers for each agent
 	for i in range(0, len(agents)):
@@ -118,23 +153,19 @@ while True:
 	agentsToKill = []
 	i = 0
 	while i < len(agents):
-		agentGoal = agents[i].goal
 		agentMarkers = agents[i].markers
 
 		#vector for each marker
 		for j in range(0, len(agentMarkers)):
 			#add the distance vector between it and the agent
 			#print (agents[i].position, agentMarkers[j].position)
-			newX = agentMarkers[j].position.x - agents[i].position.x
-			newY = agentMarkers[j].position.y - agents[i].position.y
-			newZ = agentMarkers[j].position.z - agents[i].position.z
-			agents[i].vetorDistRelacaoMarcacao.append(Vector3(newX, newY, newZ))
+			agents[i].vetorDistRelacaoMarcacao.append(Vector3.Sub_vec(agentMarkers[j].position, agents[i].position))
 
 		#print("total", len(agents[i].vetorDistRelacaoMarcacao))
 		#calculate the movement vector
 		agents[i].CalculateMotionVector()
-  
-		print(agents[i].m)
+
+		#print(agents[i].m)
         #calculate speed vector
 		agents[i].CalculateSpeed()
 
@@ -145,8 +176,8 @@ while True:
 		resultFile.write(str(agents[i].id) + ";" + str(agents[i].position.x) + ";" + str(agents[i].position.y) + ";" + str(agents[i].position.z) + "\n")
 
 		#verify agent position, in relation to the goal. If arrived, bye
-		dist = Vector3.Distance(agents[i].goal, agents[i].position)
-		print(agents[i].id, " -- Dist: ", dist, " -- Radius: ", agents[i].radius, " -- Agent: ", agents[i].position.x, agents[i].position.y, [goal.x, goal.y, goal.z])
+		dist = Vector3.Distance(agents[i].goal.position, agents[i].position)
+		print(agents[i].id, " -- Dist: ", dist, " -- Radius: ", agents[i].radius, " -- Agent: ", agents[i].position.x, agents[i].position.y)
 		#print(agents[i].speed.x, agents[i].speed.y)
 		if dist < agents[i].radius / 4:
 			agentsToKill.append(i)
@@ -157,7 +188,6 @@ while True:
 	if len(agentsToKill) > 0:
 		for i in range(0, len(agentsToKill)):
 			agents.pop(agentsToKill[i])
-
 
 #close file
 resultFile.close()

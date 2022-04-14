@@ -7,7 +7,7 @@ class AgentClass:
         self.id = id
         self.radius = radius
         self.maxSpeed = maxSpeed
-        self.markers:list[MarkerClass] = []
+        self.markers = []
         self.position = position
         self.vetorDistRelacaoMarcacao = []
         self.denominadorW = False
@@ -53,32 +53,18 @@ class AgentClass:
         #distance between auxin´s distance and origin (dont know why origin...)
         moduloY = Vector3.Distance(self.vetorDistRelacaoMarcacao[indiceRelacao], Vector3.Zero())
         #distance between goal vector and origin (dont know why origin...)
-        #print(Vector3.sub_vec(self.goal, self.position))
+        #print(Vector3.Sub_vec(self.goal.position, self.position))
         #print(Vector3.Zero())
-        #print(Vector3.Distance(Vector3.sub_vec(self.goal, self.position), Vector3.Zero()))
-        #moduloX = Vector3.Distance(Vector3.sub_vec(self.goal, self.position), Vector3.Zero())
+        #print(Vector3.Distance(Vector3.Sub_vec(self.goal.position, self.position), Vector3.Zero()))
+        #moduloX = Vector3.Distance(Vector3.Sub_vec(self.goal.position, self.position), Vector3.Zero())
         moduloX = 1.0
         
         if moduloY < 0.00001:
             return 0
-        produtoEscalar = Vector3.dot_vec(self.vetorDistRelacaoMarcacao[indiceRelacao],  Vector3.nrm_vec(Vector3.sub_vec(self.goal, self.position)))
+        produtoEscalar = Vector3.Dot_vec(self.vetorDistRelacaoMarcacao[indiceRelacao],  Vector3.Nrm_vec(Vector3.Sub_vec(self.goal.position, self.position)))
         
         retorno = (1.0 / (1.0 + moduloY)) * (1.0 + ((produtoEscalar) / (moduloX * moduloY)))
         return retorno
-        
-        
-        
-        
-        #moduloX = Vector3.Distance(self.goal, Vector3.Zero())
-        #vector * vector
-        #produtoEscalar = (self.vetorDistRelacaoMarcacao[indiceRelacao].x * self.goal.x) + (self.vetorDistRelacaoMarcacao[indiceRelacao].y * self.goal.y) + (self.vetorDistRelacaoMarcacao[indiceRelacao].z * self.goal.z)
-
-        #if moduloY < 0.00001:
-        #    return 0
-
-        #return the formula, defined in tesis/paper
-        #retorno = (1.0 / (1.0 + moduloY)) * (1.0 + ((produtoEscalar) / (moduloX * moduloY)))
-        #return retorno
 
     #The calculation formula starts here
     #the ideia is to find m=SUM[k=1 to n](Wk*Dk)
@@ -93,13 +79,10 @@ class AgentClass:
             if self.valorDenominadorW < 0.0001:
                 valorW = 0
             s += valorW
+
             #sum the resulting vector * weight (Wk*Dk)
-            newX = self.vetorDistRelacaoMarcacao[i].x * self.maxSpeed * valorW
-            newY = self.vetorDistRelacaoMarcacao[i].y * self.maxSpeed * valorW
-            newZ = self.vetorDistRelacaoMarcacao[i].z * self.maxSpeed * valorW
-            self.m.x += newX
-            self.m.y += newY
-            self.m.z += newZ           
+            self.m = Vector3.Add_vec(self.m, Vector3.Mul_vec(self.vetorDistRelacaoMarcacao[i], self.maxSpeed, valorW))
+
         #print(self.m.x, self.m.y, self.m.z)
         #print("weights", s)
 
@@ -190,7 +173,4 @@ class AgentClass:
 
     #walk
     def Walk(self, timeStep):
-        newX = self.position.x + (self.speed.x * timeStep)
-        newY = self.position.y + (self.speed.y * timeStep)
-        newZ = self.position.z + (self.speed.z * timeStep)
-        self.position = Vector3(newX, newY, newZ)
+        self.position = Vector3.Add_vec(self.position, Vector3.Mul_vec(self.speed, timeStep, 1))
