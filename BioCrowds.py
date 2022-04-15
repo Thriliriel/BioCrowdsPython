@@ -3,6 +3,7 @@ from Vector3Class import Vector3
 from CellClass import CellClass
 from MarkerClass import MarkerClass
 from GoalClass import GoalClass
+from ObstacleClass import ObstacleClass
 
 #default values
 #size of the scenario
@@ -67,6 +68,28 @@ for line in open("Input/agents.txt", "r"):
 
 	agents.append(AgentClass(int(ag[0]), gl, float(ag[2]), float(ag[3]), Vector3(float(ag[4]), float(ag[5]), float(ag[6]))))
 
+#obstacles
+obstacles = []
+
+#read the obstacles file
+for line in open("Input/obstacles.txt", "r"):
+	if '#' in line:
+		continue
+
+	#create obstacle
+	ob = line.split(',')
+
+	#if size is one, it is the id
+	if len(ob) == 1:
+		obstacles.append(ObstacleClass(int(ob[0])))
+	#if size is three, it is one of the points
+	elif len(ob) == 3:
+		obstacles[len(obstacles)-1].AddPoint(Vector3(float(ob[0]), float(ob[1]), float(ob[2])))
+	#else, something is wrong
+	else:
+		print("Error: input size is wrong!")
+		exit
+
 #cells
 cells = []
 
@@ -83,7 +106,7 @@ def CreateMap():
 #create markers
 def CreateMarkers():
 	for i in range(0, len(cells)):
-		cells[i].CreateMarkers()
+		cells[i].CreateMarkers(obstacles)
 		#print("Qnt created: ", len(cells[i].markers))
 
 #save markers in file
