@@ -58,7 +58,7 @@ class CellClass:
             if flag > self.qntMarkers * 2:
                 #reset flag
                 flag = 0
-                print(self.id)
+                #print(self.id)
                 break
 
             i += 1

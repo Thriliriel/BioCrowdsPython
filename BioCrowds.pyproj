@@ -26,7 +26,9 @@
     <Compile Include="CellClass.py" />
     <Compile Include="GoalClass.py" />
     <Compile Include="MarkerClass.py" />
+    <Compile Include="NodeClass.py" />
     <Compile Include="ObstacleClass.py" />
+    <Compile Include="PathPlanningClass.py" />
     <Compile Include="Vector3Class.py" />
     <Compile Include="Visualize.py" />
     <Compile Include="VisualizeMarkers.py" />

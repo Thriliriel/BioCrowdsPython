@@ -1,3 +1,4 @@
+from os import path
 from AgentClass import AgentClass
 from Vector3Class import Vector3
 from CellClass import CellClass
@@ -14,6 +15,8 @@ PORC_QTD_Marcacoes = 0.65
 timeStep = 0.02
 #size of each square cell (Ex: 2 -> cell 2x2)
 cellSize = 2
+#using path planning?
+pathPlanning = True
 
 #read the config file
 lineCount = 1
@@ -33,6 +36,12 @@ for line in open("Input/config.txt", "r"):
 		#size of the scenario
 		sp = line.split(',')
 		mapSize = Vector3(int(sp[0]), int(sp[1]), int(sp[2]))
+	elif lineCount == 5:
+		#using path planning?
+		if line.lower() == 'false':
+			pathPlanning = False
+		else:
+			pathPlanning = True
 
 	lineCount += 1
 
@@ -66,7 +75,7 @@ for line in open("Input/agents.txt", "r"):
 			gl = goals[i]
 			break
 
-	agents.append(AgentClass(int(ag[0]), gl, float(ag[2]), float(ag[3]), Vector3(float(ag[4]), float(ag[5]), float(ag[6]))))
+	agents.append(AgentClass(int(ag[0]), gl, float(ag[2]), float(ag[3]), pathPlanning, Vector3(float(ag[4]), float(ag[5]), float(ag[6]))))
 
 #obstacles
 obstacles = []
@@ -121,6 +130,17 @@ CreateMap()
 CreateMarkers()
 SaveMarkers()
 
+#for each goal, vinculate the cell
+for i in range(0, len(goals)):
+	totalDistance = cellSize * 2
+	for j in range(0, len(cells)):
+		distance = Vector3.Distance(goals[i].position, cells[j].position)
+
+		#if distance is lower than total, change
+		if distance < totalDistance:
+			totalDistance = distance
+			goals[i].cell = cells[j]
+
 #for each cell, find its neighbors
 for i in range(0, len(cells)):
 	cells[i].FindNeighbor(cells)
@@ -133,6 +153,11 @@ for i in range(0, len(agents)):
 		if dist < minDis:
 			minDis = dist
 			agents[i].cell = cells[c]
+
+#for each agent, calculate the path, if true
+if pathPlanning:
+	for i in range(0, len(agents)):
+		agents[i].FindPath()
 
 #open file to write
 resultFile = open("resultFile.csv", "w")
