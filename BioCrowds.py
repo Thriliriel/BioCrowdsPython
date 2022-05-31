@@ -230,6 +230,22 @@ while True:
 		if dist < agents[i].radius / 4:
 			agentsToKill.append(i)
 
+		#update lastdist (max = 5)
+		if len(agents[i].lastDist) == 5:
+			agents[i].lastDist.pop(0)
+
+		agents[i].lastDist.append(dist)
+
+		#check them all
+		qntFound = 0
+		for ck in agents[i].lastDist:
+			if ck == dist:
+				qntFound += 1
+
+		#if distances does not change, assume agent is stuck
+		if qntFound == 5:
+			agentsToKill.append(i)
+
 		i += 1
 
 	#die!
