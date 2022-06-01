@@ -1,0 +1,282 @@
+{
+  "terrains": [
+    {
+      "transform": {
+        "position": [
+          0.0,
+          -0.05,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "localScale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "terrain_size": [
+        30.0,
+        600.0,
+        30.0
+      ]
+    }
+  ],
+  "goals": [
+    {
+      "position": [
+        25.1902981,
+        0.5,
+        11.5974293
+      ]
+    },
+    {
+      "position": [
+        24.4470253,
+        0.5,
+        17.7219276
+      ]
+    }
+  ],
+  "obstacles": [
+    {
+      "transform": {
+        "position": [
+          7.31,
+          0.0,
+          0.85
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "localScale": [
+          5.0,
+          1.0,
+          1.0
+        ]
+      },
+      "point_list": [
+        [
+          4.81,
+          0.350000024,
+          0.0
+        ],
+        [
+          4.81,
+          1.35,
+          0.0
+        ],
+        [
+          9.809999,
+          1.35,
+          0.0
+        ],
+        [
+          9.809999,
+          0.350000024,
+          0.0
+        ]
+      ]
+    },
+    {
+      "transform": {
+        "position": [
+          6.53,
+          0.0,
+          27.2
+        ],
+        "rotation": [
+          0.0,
+          11.4439535,
+          0.0
+        ],
+        "localScale": [
+          5.0,
+          1.0,
+          1.0
+        ]
+      },
+      "point_list": [
+        [
+          3.9804976,
+          27.205965,
+          0.0
+        ],
+        [
+          4.17890644,
+          28.1860828,
+          0.0
+        ],
+        [
+          9.079503,
+          27.1940365,
+          0.0
+        ],
+        [
+          8.881094,
+          26.2139187,
+          0.0
+        ]
+      ]
+    }
+  ],
+  "spawnAreas": [
+    {
+      "transform": {
+        "position": [
+          3.936777,
+          0.5,
+          11.4568672
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "localScale": [
+          2.0,
+          1.0,
+          2.0
+        ]
+      },
+      "agent_count": 5,
+      "remove_at_goal": true,
+      "goal_list": [
+        0
+      ],
+      "wait_list": [],
+      "cycle_lenght": 0.0,
+      "cycle_agent_count": 2,
+      "cycle_remove_at_goal": true,
+      "cycle_goal_list": [],
+      "cycle_wait_list": []
+    },
+    {
+      "transform": {
+        "position": [
+          3.61536217,
+          0.5,
+          19.20787
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "localScale": [
+          2.0,
+          1.0,
+          2.0
+        ]
+      },
+      "agent_count": 3,
+      "remove_at_goal": true,
+      "goal_list": [
+        1
+      ],
+      "wait_list": [],
+      "cycle_lenght": 0.0,
+      "cycle_agent_count": 2,
+      "cycle_remove_at_goal": true,
+      "cycle_goal_list": [],
+      "cycle_wait_list": []
+    }
+  ],
+  "loaded_models": [],
+  "agents": [
+    {
+      "position": [
+        3.44859266,
+        0.0,
+        10.8198986
+      ],
+      "goal_list": [
+        0
+      ],
+      "remove_goal_reach": true
+    },
+    {
+      "position": [
+        4.37828541,
+        0.0,
+        11.0045471
+      ],
+      "goal_list": [
+        0
+      ],
+      "remove_goal_reach": true
+    },
+    {
+      "position": [
+        4.17562,
+        0.0,
+        10.9487705
+      ],
+      "goal_list": [
+        0
+      ],
+      "remove_goal_reach": true
+    },
+    {
+      "position": [
+        3.25129485,
+        0.0,
+        11.6120815
+      ],
+      "goal_list": [
+        0
+      ],
+      "remove_goal_reach": true
+    },
+    {
+      "position": [
+        4.851543,
+        0.0,
+        10.76745
+      ],
+      "goal_list": [
+        0
+      ],
+      "remove_goal_reach": true
+    },
+    {
+      "position": [
+        3.16502714,
+        0.0,
+        19.3215485
+      ],
+      "goal_list": [
+        1
+      ],
+      "remove_goal_reach": true
+    },
+    {
+      "position": [
+        3.02728224,
+        0.0,
+        18.4824677
+      ],
+      "goal_list": [
+        1
+      ],
+      "remove_goal_reach": true
+    },
+    {
+      "position": [
+        4.261084,
+        0.0,
+        19.6187057
+      ],
+      "goal_list": [
+        1
+      ],
+      "remove_goal_reach": true
+    }
+  ],
+  "auxins": []
+}

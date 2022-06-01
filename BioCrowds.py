@@ -1,5 +1,8 @@
 from os import path
+import argparse
 from AgentClass import AgentClass
+from Parsing.ParserJSON import ParserJSON
+from Parsing.ParserTXT import ParserTXT
 from Vector3Class import Vector3
 from CellClass import CellClass
 from MarkerClass import MarkerClass
@@ -17,90 +20,13 @@ timeStep = 0.02
 cellSize = 2
 #using path planning?
 pathPlanning = True
+#using json input
+jsonInputFile = ''
 
-#read the config file
-lineCount = 1
-for line in open("Input/config.txt", "r"):
-	if '#' in line:
-		continue
-	if lineCount == 1:
-		#markers density
-		PORC_QTD_Marcacoes = float(line)
-	elif lineCount == 2:
-		#FPS
-		timeStep = float(line)
-	elif lineCount == 3:
-		#size of each square cell
-		cellSize = int(line)
-	elif lineCount == 4:
-		#size of the scenario
-		sp = line.split(',')
-		mapSize = Vector3(int(sp[0]), int(sp[1]), int(sp[2]))
-	elif lineCount == 5:
-		#using path planning?
-		if line.lower() == 'false':
-			pathPlanning = False
-		else:
-			pathPlanning = True
-
-	lineCount += 1
-
-#goals
-goals = []
-
-#read the goals file
-for line in open("Input/goals.txt", "r"):
-	if '#' in line:
-		continue
-
-	#create goal
-	gl = line.split(',')
-	goals.append(GoalClass(int(gl[0]), Vector3(float(gl[1]), float(gl[2]), float(gl[3]))))
-
-#agents
-agents = []
-
-#read the agents file
-for line in open("Input/agents.txt", "r"):
-	if '#' in line:
-		continue
-
-	#create agent
-	ag = line.split(',')
-
-	#find the goal with this id
-	gl = None
-	for i in range(0, len(goals)):
-		if goals[i].id == int(ag[1]):
-			gl = goals[i]
-			break
-
-	agents.append(AgentClass(int(ag[0]), gl, float(ag[2]), float(ag[3]), pathPlanning, Vector3(float(ag[4]), float(ag[5]), float(ag[6]))))
-
-#obstacles
-obstacles = []
-
-#read the obstacles file
-for line in open("Input/obstacles.txt", "r"):
-	if '#' in line:
-		continue
-
-	#create obstacle
-	ob = line.split(',')
-
-	#if size is one, it is the id
-	if len(ob) == 1:
-		obstacles.append(ObstacleClass(int(ob[0])))
-	#if size is three, it is one of the points
-	elif len(ob) == 3:
-		obstacles[len(obstacles)-1].AddPoint(Vector3(float(ob[0]), float(ob[1]), float(ob[2])))
-	#else, something is wrong
-	else:
-		print("Error: input size is wrong!")
-		exit
-
-#cells
-cells = []
+goals:list[GoalClass] = []
+agents:list[AgentClass] = []
+obstacles:list[ObstacleClass] = []
+cells:list[CellClass] = []
 
 #create the cells and markers
 def CreateMap():
@@ -126,9 +52,28 @@ def SaveMarkers():
 			markerFile.write(cells[i].id + ";" + str(cells[i].markers[j].position.x) + ";" + str(cells[i].markers[j].position.y) + ";" + str(cells[i].markers[j].position.z) + "\n")
 	markerFile.close()
 
-CreateMap()
-CreateMarkers()
-SaveMarkers()
+arg_parser = argparse.ArgumentParser(description="BioCrowds Python.")
+arg_parser.add_argument('--f', metavar="F", type=str, default = '', help='Input File Name.')
+args = vars(arg_parser.parse_args())
+
+
+#parse the JSON input
+if args['f'] != '':
+	mapSize, goals, agents, obstacles = ParserJSON.ParseFile(args['f'])
+	CreateMap()
+	CreateMarkers()
+	SaveMarkers()
+
+
+#read the config files if no JSON is defined
+if args['f'] == '':
+	PORC_QTD_Marcacoes, timeStep, cellSize, mapSize, pathPlanning = ParserTXT.ParseConfigurationFile()
+	goals = ParserTXT.ParseGoals()
+	agents = ParserTXT.ParseAgents(goals, pathPlanning)
+	obstacles = ParserTXT.ParseObstacles()
+	CreateMap()
+	CreateMarkers()
+	SaveMarkers()
 
 #for each goal, vinculate the cell
 for i in range(0, len(goals)):
@@ -161,6 +106,8 @@ if pathPlanning:
 
 #open file to write
 resultFile = open("resultFile.csv", "w")
+
+simulationFrame = 0
 
 #walking loop
 while True:
@@ -225,7 +172,7 @@ while True:
 
 		#verify agent position, in relation to the goal. If arrived, bye
 		dist = Vector3.Distance(agents[i].goal.position, agents[i].position)
-		print(agents[i].id, " -- Dist: ", dist, " -- Radius: ", agents[i].radius, " -- Agent: ", agents[i].position.x, agents[i].position.y)
+		#print(agents[i].id, " -- Dist: ", dist, " -- Radius: ", agents[i].radius, " -- Agent: ", agents[i].position.x, agents[i].position.y)
 		#print(agents[i].speed.x, agents[i].speed.y)
 		if dist < agents[i].radius / 4:
 			agentsToKill.append(i)
@@ -252,6 +199,11 @@ while True:
 	if len(agentsToKill) > 0:
 		for i in range(0, len(agentsToKill)):
 			agents.pop(agentsToKill[i])
+	print("Simulation Frame:", simulationFrame, end='\r')
+	simulationFrame += 1
+
+simulationTime = (simulationFrame+1) * timeStep
+print(f'Total Simulation Time: {simulationTime} "seconds. ({simulationFrame+1} frames)')
 
 #close file
 resultFile.close()

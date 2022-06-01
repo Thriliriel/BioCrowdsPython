@@ -8,8 +8,8 @@ x = []
 # values on y-axis
 y = []
 
-mapSizeX = 20
-mapSizeY = 20
+mapSizeX = 30
+mapSizeY = 30
 
 #read the config file to get the map size
 lineCount = 1
