@@ -1,5 +1,8 @@
 from os import path
+import argparse
 from AgentClass import AgentClass
+from Parsing.ParserJSON import ParserJSON
+from Parsing.ParserTXT import ParserTXT
 from Vector3Class import Vector3
 from CellClass import CellClass
 from MarkerClass import MarkerClass
@@ -17,7 +20,10 @@ timeStep = 0.02
 cellSize = 2
 #using path planning?
 pathPlanning = True
+#using json input
+jsonInputFile = ''
 
+<<<<<<< HEAD
 #read the config file
 lineCount = 1
 for line in open("Input/config.txt", "r"):
@@ -103,6 +109,12 @@ for line in open("Input/obstacles.txt", "r"):
 
 #cells
 cells = []
+=======
+goals:list[GoalClass] = []
+agents:list[AgentClass] = []
+obstacles:list[ObstacleClass] = []
+cells:list[CellClass] = []
+>>>>>>> e9b214d2561daf7fd3f2718edc6b6ee39de402bf
 
 #create the cells and markers
 def CreateMap():
@@ -128,9 +140,28 @@ def SaveMarkers():
 			markerFile.write(cells[i].id + ";" + str(cells[i].markers[j].position.x) + ";" + str(cells[i].markers[j].position.y) + ";" + str(cells[i].markers[j].position.z) + "\n")
 	markerFile.close()
 
-CreateMap()
-CreateMarkers()
-SaveMarkers()
+arg_parser = argparse.ArgumentParser(description="BioCrowds Python.")
+arg_parser.add_argument('--f', metavar="F", type=str, default = '', help='Input File Name.')
+args = vars(arg_parser.parse_args())
+
+
+#parse the JSON input
+if args['f'] != '':
+	mapSize, goals, agents, obstacles = ParserJSON.ParseFile(args['f'])
+	CreateMap()
+	CreateMarkers()
+	SaveMarkers()
+
+
+#read the config files if no JSON is defined
+if args['f'] == '':
+	PORC_QTD_Marcacoes, timeStep, cellSize, mapSize, pathPlanning = ParserTXT.ParseConfigurationFile()
+	goals = ParserTXT.ParseGoals()
+	agents = ParserTXT.ParseAgents(goals, pathPlanning)
+	obstacles = ParserTXT.ParseObstacles()
+	CreateMap()
+	CreateMarkers()
+	SaveMarkers()
 
 #for each goal, vinculate the cell
 for i in range(0, len(goals)):
@@ -163,6 +194,8 @@ if pathPlanning:
 
 #open file to write
 resultFile = open("resultFile.csv", "w")
+
+simulationFrame = 0
 
 #walking loop
 while True:
@@ -227,7 +260,7 @@ while True:
 
 		#verify agent position, in relation to the goal. If arrived, bye
 		dist = Vector3.Distance(agents[i].goal.position, agents[i].position)
-		print(agents[i].id, " -- Dist: ", dist, " -- Radius: ", agents[i].radius, " -- Agent: ", agents[i].position.x, agents[i].position.y)
+		#print(agents[i].id, " -- Dist: ", dist, " -- Radius: ", agents[i].radius, " -- Agent: ", agents[i].position.x, agents[i].position.y)
 		#print(agents[i].speed.x, agents[i].speed.y)
 		if dist < agents[i].radius / 4:
 			agentsToKill.append(i)
@@ -254,9 +287,15 @@ while True:
 	if len(agentsToKill) > 0:
 		for i in range(0, len(agentsToKill)):
 			agents.pop(agentsToKill[i])
+	print("Simulation Frame:", simulationFrame, end='\r')
+	simulationFrame += 1
+
+simulationTime = (simulationFrame+1) * timeStep
+print(f'Total Simulation Time: {simulationTime} "seconds. ({simulationFrame+1} frames)')
 
 #close file
 resultFile.close()
+<<<<<<< HEAD
 
 #save the cells, for heatmap
 resultCellsFile = open("resultCellFile.txt", "w")
@@ -276,3 +315,5 @@ for cell in cells:
 
 
 resultCellsFile.close()
+=======
+>>>>>>> e9b214d2561daf7fd3f2718edc6b6ee39de402bf
