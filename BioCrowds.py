@@ -77,6 +77,8 @@ for line in open("Input/agents.txt", "r"):
 
 	agents.append(AgentClass(int(ag[0]), gl, float(ag[2]), float(ag[3]), pathPlanning, Vector3(float(ag[4]), float(ag[5]), float(ag[6]))))
 
+totalAgents = len(agents)
+
 #obstacles
 obstacles = []
 
@@ -255,3 +257,22 @@ while True:
 
 #close file
 resultFile.close()
+
+#save the cells, for heatmap
+resultCellsFile = open("resultCellFile.txt", "w")
+thisX = 0
+firstColumn = True
+for cell in cells:
+	if thisX != cell.position.x:
+		thisX = cell.position.x
+		resultCellsFile.write("\n")
+		firstColumn = True
+
+	if firstColumn:
+		resultCellsFile.write(str(len(cell.passedAgents)))
+		firstColumn = False
+	else:
+		resultCellsFile.write("," + str(len(cell.passedAgents)))
+
+
+resultCellsFile.close()
